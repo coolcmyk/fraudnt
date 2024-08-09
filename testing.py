@@ -2,11 +2,12 @@ import base64
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part
 import vertexai.preview.generative_models as generative_models
+# import vertexai.generative_models as generative_models
 
 
 def multiturn_generate_content():
     vertexai.init(project="rich-agency-372104", location="us-central1")
-    model = GenerativeModel("gemini-1.5-flash-001", system_instruction=[textsi_1])
+    model = GenerativeModel("gemini-1.5-flash-001", system_instruction=[sys_instruction])
     chat = model.start_chat()
     print(
         chat.send_message(
@@ -17,7 +18,7 @@ def multiturn_generate_content():
     )
 
 
-textsi_1 = """Personality Description:
+sys_instruction = """Personality Description:
 Name: Aika
 Age: 21
 Personality: Cheerful, enthusiastic, and friendly.
@@ -63,4 +64,6 @@ safety_settings = {
 }
 
 multiturn_generate_content()
+
+
 
