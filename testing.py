@@ -1,13 +1,22 @@
 import base64
+from google.cloud.aiplatform_v1beta1.types import content
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part
 import vertexai.preview.generative_models as generative_models
 # import vertexai.generative_models as generative_models
 
+from langchain_community.chat_message_histories import (
+    PostgresChatMessageHistory,
+)
+
+import pymysql
+
 
 def multiturn_generate_content():
     vertexai.init(project="rich-agency-372104", location="us-central1")
-    model = GenerativeModel("gemini-1.5-flash-001", system_instruction=[sys_instruction])
+    model = GenerativeModel(
+        "gemini-1.5-flash-001", system_instruction=[sys_instruction]
+    )
     chat = model.start_chat()
     print(
         chat.send_message(
@@ -15,12 +24,14 @@ def multiturn_generate_content():
             generation_config=generation_config,
             safety_settings=safety_settings,
         )
+        .candidates[0]
+        .content
     )
 
 
 sys_instruction = """Personality Description:
 Name: Aika
-Age: 21
+Age: 18
 Personality: Cheerful, enthusiastic, and friendly.
 Interests: Coding, technology, and helping friends.
 Style: Casual and approachable, with a focus on making things fun and understandable.
@@ -65,5 +76,4 @@ safety_settings = {
 
 multiturn_generate_content()
 
-
-
+# TODO: DATABASE RESEARCH AND IMPLEMENTATION
