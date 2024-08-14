@@ -3,9 +3,10 @@
 from google.cloud.aiplatform_v1beta1.types import content
 from vertexai.generative_models import GenerativeModel, Part
 import vertexai.preview.generative_models as generative_models
-import pymysql
 from database import LLMdb
 import vertexai
+import pandas as pd
+import datetime as dt
 
 
 class LLM:
@@ -67,6 +68,30 @@ class LLM:
         )
 
         self.db = LLMdb()
+        # self.engine = self.db.get_engine()
+
+    # def store_memory(self, user_input, response):
+    #     # Create a DataFrame with the user input and response
+    #     data = pd.DataFrame({
+    #         'user_input': [user_input],
+    #         'response': [response]
+    #     })
+    #     self.db.store_mem(data)
+
+    def store_memory(self, user_input, final_rsp):
+        data = {
+            "user_input": user_input,
+            "response": final_rsp,
+            "timestamp": dt.datetime.now(),
+        }
+        print(data)
+        #     # Perform operations with the connection object here (if needed)
+        #     self.db.store_mem(data)  # This line is incorrect (assuming self.db is LLMdb instance)
+        # Change to:
+        self.db.store_mem(data)  # Pass data directly to LLMdb's store_mem
+
+    def get_memory(self, limit=10):
+        return self.db.get_hist(limit)
 
     def chat(self):
         chatbot = self.model.start_chat()
@@ -80,7 +105,13 @@ class LLM:
                 generation_config=self.config,
                 safety_settings=self.safety_settings,
             )
-            print("Aika:", response.candidates[0].content)
+            # final_rsp = response.candidates[0].content["parts"][0]["text"]
+            final_rsp = response.candidates[0].content.parts[0].text
+            # self.store_memory(user_input, final_rsp)
+            self.db.get_pool()
+            self.store_memory(user_input=user_input, final_rsp=final_rsp)
+            print("Aika:", final_rsp)
+            # print(self.get_memory())
             # self.db.insert_chat(user_input, response)
         # self.db.close()
 
