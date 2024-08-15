@@ -6,7 +6,6 @@ import './App.css'
 import HomePage from './components/HomePage'
 
 const App = () => (
-    
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to={"/home"} />} />
