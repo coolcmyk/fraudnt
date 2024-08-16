@@ -18,3 +18,23 @@ const App = () => (
 
 
 export default App;
+
+// import React from 'react';
+// import ReactDOM from 'react-dom/client';
+// import { BrowserRouter, Routes, Route } from 'react-router-dom';  
+
+// import Homepage from '../../FE/src/components/HomePage.jsx';
+
+// function App() {
+// return (
+//  <BrowserRouter>
+//    <Routes>
+//      <Route path="/" element={<Homepage />} />
+//      {/* Other routes */}
+//    </Routes>
+//  </BrowserRouter>
+// );
+// }
+
+// const root = ReactDOM.createRoot(document.getElementById('root'));
+// root.render(<App />);

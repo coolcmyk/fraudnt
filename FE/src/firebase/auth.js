@@ -30,8 +30,8 @@ export const doPasswordChange  = async (password) => {
 
 export const doSendEmailVerification  = async () => {
   return sendEmailVerification(auth.currentUser, {
-    url: ${window.location.origin}/home,
+    url: '${window.location.origin}/home',
   });
-  };
+};
 
 
