@@ -10,92 +10,170 @@
 # def on_request_example(req: https_fn.Request) -> https_fn.Response:
 #     return https_fn.Response("Hello world!")
 #######################################################
-import firebase_admin
-from firebase_admin import credentials
-from firebase_functions import https_fn
-from flask import Flask, request, jsonify
-from aiko import LLM
+# import os
+# from firebase_admin import credentials, initialize_app
+# from firebase_functions import https_fn
+# from flask import Flask, request, jsonify
+# from aiko import LLM
+# from werkzeug.middleware.proxy_fix import ProxyFix
+# from flask_cors import CORS
+# # Initialize Firebase app
+# initialize_app()
 
-# Initialize Firebase app
-firebase_admin.initialize_app()
+# # Initialize LLM
+# llm = LLM()
 
-# Initialize LLM
-llm = LLM()
+# app = Flask(__name__)
+# CORS(app)
 
-def create_app():
-    app = Flask(__name__)
+# @app.route("/", methods=["POST"])
+# @https_fn.on_call()
+# def handle_chat_request():
+#     if request.method != "POST":
+#         return jsonify({"error": "Send a POST request"}), 405
 
-    @app.route("/chat", methods=["POST"])
-    def handle_chat_request():
-        if request.method != "POST":
-            return jsonify({"error": "Send a POST request"}), 405
-        
-        try:
-            request_json = request.get_json()
-            if not request_json:
-                return jsonify({"error": "Invalid JSON"}), 400
-            
-            user_input = request_json.get("message")
-            if not user_input:
-                return jsonify({"error": "Missing 'message' in request"}), 400
-            
-            response = llm.chat_single_turn(user_input)
-            return jsonify({"response": response}), 200
-        
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+#     try:
+#         request_json = request.get_json()
+#         if not request_json:
+#             return jsonify({"error": "Invalid JSON"}), 400
 
-    return app
+#         user_input = request_json.get("message")
+#         if not user_input:
+#             return jsonify({"error": "Missing 'message' in request"}), 400
 
-@https_fn.on_request()
-def chat_function(request: https_fn.Request) -> https_fn.Response:
-    app = create_app()
-    return app(request.environ, lambda status, headers, body: (status, headers, [body]))
+#         response = llm.chat(user_input)
+#         return jsonify({"response": response}), 200
 
-# # The Cloud Functions for Firebase SDK to create Cloud Functions and set up triggers.
-# from firebase_functions import firestore_fn, https_fn
+#     except Exception as e:
+#         print(e)
+#         return jsonify({"error": str(e)}), 500
 
-# # The Firebase Admin SDK to access Cloud Firestore.
-# from firebase_admin import initialize_app, firestore
-# import google.cloud.firestore
+################################################################################
+# # Apply ProxyFix middleware
+# app.wsgi_app = ProxyFix(
+#     app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
+# )
 
-# app = initialize_app()
+# @https_fn.on_request()
+# def chat_function(request: https_fn.Request) -> https_fn.Response:
+#     return app(request.environ, lambda status, headers, body: (status, headers, [body]))
+
+# if __name__ == "__main__":
+#     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+
+
+# # import os
+
+# # from flask import Flask, request, jsonify
+# # from aiko import LLM
+# # from firebase_functions import https_fn
+
+
+# # llm = LLM()
+# # app = Flask(__name__)
+
+# # # @https_fn.on_request()
+# # @app.route("/", methods=["POST"])
+# # def chat():
+# #     # request_json = request.get_json()
+# #     # if not request_json:
+# #     #     return jsonify({"error": "Invalid JSON"}), 400
+
+# #     # user_input = request_json.get("message")
+# #     # if not user_input:
+# #     #    return jsonify({"error": "Missing 'message' in request"}), 400
+
+# #     # response = llm.chat(user_input)
+# #     # return jsonify({"response": response}), 200
+
+
+# # if __name__ == "__main__":
+# #     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT")))
+
+
+# # Copyright 2023 Google Inc. All Rights Reserved.
+# #
+# # Licensed under the Apache License, Version 2.0 (the "License");
+# # you may not use this file except in compliance with the License.
+# # You may obtain a copy of the License at
+# #
+# #      http://www.apache.org/licenses/LICENSE-2.0
+# #
+# # Unless required by applicable law or agreed to in writing, software
+# # distributed under the License is distributed on an "AS IS" BASIS,
+# # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# # See the License for the specific language governing permissions and
+# # limitations under the License.
+
+# # [START httpflaskexample]
+# from firebase_admin import initialize_app, db
+# from firebase_functions import https_fn
+# import flask
+
+# initialize_app()
+# app = flask.Flask(__name__)
+
+# # Build multiple CRUD interfaces:
+
+
+# @app.get("/widgets")
+# @app.get("/widgets/<id>")
+# def get_widget(id=None):
+#     if id is not None:
+#         return db.reference(f"/widgets/{id}").get()
+#     else:
+#         return db.reference("/widgets").get()
+
+
+# @app.post("/widgets")
+# def add_widget():
+#     new_widget = flask.request.get_data(as_text=True)
+#     db.reference("/widgets").push(new_widget)
+#     return flask.Response(status=201, response="Added widget")
+
+
+# # Expose Flask app as a single Cloud Function:
 
 
 # @https_fn.on_request()
-# def addmessage(req: https_fn.Request) -> https_fn.Response:
-#     """Take the text parameter passed to this HTTP endpoint and insert it into
-#     a new document in the messages collection."""
-#     # Grab the text parameter.
-#     original = req.args.get("text")
-#     if original is None:
-#         return https_fn.Response("No text parameter provided", status=400)
+# def httpsflaskexample(req: https_fn.Request) -> https_fn.Response:
+#     with app.request_context(req.environ):
+#         return app.full_dispatch_request()
+# # [END httpflaskexample]
 
-#     firestore_client: google.cloud.firestore.Client = firestore.client()
+from firebase_admin import initialize_app, db
+from firebase_functions import https_fn
+from flask import Flask, request, jsonify
+from aiko import LLM
+import os
+from flask_cors import CORS
+# Initialize Firebase Admin SDK
+initialize_app()
 
-#     # Push the new message into Cloud Firestore using the Firebase Admin SDK.
-#     _, doc_ref = firestore_client.collection("messages").add({"original": original})
+# Create a Flask app instance
+app = Flask(__name__)
+CORS(app)
+# Initialize the LLM instance
+llm = LLM()
 
-#     # Send back a message that we've successfully written the message
-#     return https_fn.Response(f"Message with ID {doc_ref.id} added.")
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    request_json = request.get_json()
+    user_input = request_json.get("message")
+    response = llm.chat_single_turn(user_input)
+    return jsonify({"response": response}), 200
 
 
-# @firestore_fn.on_document_created(document="messages/{pushId}")
-# def makeuppercase(event: firestore_fn.Event[firestore_fn.DocumentSnapshot | None]) -> None:
-#     """Listens for new documents to be added to /messages. If the document has
-#     an "original" field, creates an "uppercase" field containg the contents of
-#     "original" in upper case."""
+@https_fn.on_request()
+def httpsflaskexample(req: https_fn.Request) -> https_fn.Response:
+    with app.request_context(req.environ):
+        return app.full_dispatch_request()
+    
 
-#     # Get the value of "original" if it exists.
-#     if event.data is None:
-#         return
-#     try:
-#         original = event.data.get("original")
-#     except KeyError:
-#         # No "original" field, so do nothing.
-#         return
 
-#     # Set the "uppercase" field.
-#     print(f"Uppercasing {event.params['pushId']}: {original}")
-#     upper = original.upper()
-#     event.data.reference.update({"uppercase": upper})
+    # LOCAL DEV
+# port = int(os.environ.get("PORT", 8080))
+# if __name__ == "__main__":
+#     app.run(debug=True, host="0.0.0.0", port=port)
+# The app.run block is not needed for Firebase Functions
