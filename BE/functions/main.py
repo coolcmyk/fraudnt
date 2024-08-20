@@ -141,34 +141,34 @@
 #         return app.full_dispatch_request()
 # # [END httpflaskexample]
 
-from firebase_admin import initialize_app, db
-from firebase_functions import https_fn
-from flask import Flask, request, jsonify
-from aiko import LLM
-import os
-from flask_cors import CORS
-# Initialize Firebase Admin SDK
-initialize_app()
+# from firebase_admin import initialize_app, db
+# from firebase_functions import https_fn
+# from flask import Flask, request, jsonify
+# from aiko import LLM
+# import os
+# from flask_cors import CORS
+# # Initialize Firebase Admin SDK
+# initialize_app()
 
-# Create a Flask app instance
-app = Flask(__name__)
-CORS(app)
-# Initialize the LLM instance
-llm = LLM()
-
-
-@app.route("/chat", methods=["POST"])
-def chat():
-    request_json = request.get_json()
-    user_input = request_json.get("message")
-    response = llm.chat_single_turn(user_input)
-    return jsonify({"response": response}), 200
+# # Create a Flask app instance
+# app = Flask(__name__)
+# CORS(app)
+# # Initialize the LLM instance
+# llm = LLM()
 
 
-@https_fn.on_request()
-def httpsflaskexample(req: https_fn.Request) -> https_fn.Response:
-    with app.request_context(req.environ):
-        return app.full_dispatch_request()
+# @app.route("/chat", methods=["POST"])
+# def chat():
+#     request_json = request.get_json()
+#     user_input = request_json.get("message")
+#     response = llm.chat_single_turn(user_input)
+#     return jsonify({"response": response}), 200
+
+
+# @https_fn.on_request()
+# def httpsflaskexample(req: https_fn.Request) -> https_fn.Response:
+#     with app.request_context(req.environ):
+#         return app.full_dispatch_request()
     
 
 
@@ -177,3 +177,46 @@ def httpsflaskexample(req: https_fn.Request) -> https_fn.Response:
 # if __name__ == "__main__":
 #     app.run(debug=True, host="0.0.0.0", port=port)
 # The app.run block is not needed for Firebase Functions
+
+
+from firebase_admin import initialize_app, db
+from firebase_functions import https_fn
+from flask import Flask, request, jsonify
+from aiko import LLM
+import os
+from flask_cors import CORS, cross_origin
+# Initialize Firebase Admin SDK
+initialize_app()
+
+# Create a Flask app instance
+app = Flask(__name__)
+CORS(app,  resources={r"/*": {"origins": "*"}})
+# CORS(app)
+# Initialize the LLM instance
+llm = LLM()
+
+
+
+@cross_origin(supports_credentials=True)
+@app.route("/chat", methods=["POST"])
+def chat():
+    request_json = request.get_json(silent=True)
+    request_args = request.args
+
+    if request_json and 'message' in request_json:
+        user_input = request_json['message']
+    elif request_args and 'name' in request_args:
+        user_input = request_args['message']
+    else:
+        user_input = '${this is system settings, user failed to send the message}'
+    # return 'Hello', user_input
+
+    # response = llm.chat(user_input)
+
+    response = llm.chat(user_input)
+    resp = flask.jsonify({"response": response})
+    resp.headers.add('Access-Control-Allow-Origin', '*')
+    return resp
+    # return jsonify({"response": response}), 200
+
+
