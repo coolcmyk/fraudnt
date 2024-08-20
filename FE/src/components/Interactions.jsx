@@ -220,34 +220,28 @@ const Interactions = () => {
   const [messages, setMessages] = useState([]);
 
   const handleSubmit = async (e) => {
-    const cors = require('cors');
-    const express = require('express');
-    const app = express();
-    app.use(cors());
+    // const cors = require('cors');
+    // const express = require('express');
+    // const app = express();
+    // app.use(cors());
 
 
-    app.use(function(req, res, next) {
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-      next();
-    });
+    // app.use(function(req, res, next) {
+    //   res.header("Access-Control-Allow-Origin", "*");
+    //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    //   next();
+    // });
 
     e.preventDefault();
     if (!input.trim()) return;
     
     
     setMessages(prev => [...prev, { type: 'user', content: input }]);
-    
-    try {
-      const response = await axios.post('https://asia-southeast1-rich-agency-372104.cloudfunctions.net/aiko/chat', 
+      const response = await axios.post('https://australia-southeast1-rich-agency-372104.cloudfunctions.net/aiko-testing/chat', 
         { message: input }
       );
-      setMessages(prev => [...prev, { type: 'bot', content: response.data.response }]);
-    } catch (error) {
-      console.error('Error:', error);
-      setMessages(prev => [...prev, { type: 'bot', content: 'Sorry, I encountered an error.' }]);
-    }
-    
+      console.log('Response:', response.data); // Log the entire response
+
     setInput('');
   };
 
