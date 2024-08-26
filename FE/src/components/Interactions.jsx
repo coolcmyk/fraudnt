@@ -212,36 +212,86 @@
 // export default Interactions;
 
 
+// import React, { useState } from 'react';
+// import axios from 'axios';
+
+// const Interactions = () => {
+//   const [input, setInput] = useState('');
+//   const [messages, setMessages] = useState([]);
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     if (!input.trim()) return;
+
+//     setMessages(prev => [...prev, { type: 'user', content: input }]);
+//     const response = await axios.post('https://australia-southeast2-rich-agency-372104.cloudfunctions.net/aiko-testing-1/chat', 
+//       { message: input }
+//     );
+//     console.log('Response:', response.data); // Log the entire response
+//     setMessages(prev => [...prev, { type: 'bot', content: response.data.response }]);
+//     setInput('');
+//   };
+
+//   return (
+//     <div className="box-border h-full p-4 border-4 border-white flex flex-col justify-between text-white">
+//       <div className="overflow-auto mb-4">
+//         {messages.length === 0 ? (
+//           <p>No messages yet. Start a conversation!</p>
+//         ) : (
+//           messages.map((msg, index) => (
+//             <div key={index} className={`mb-2 ${msg.type === 'user' ? 'text-right' : 'text-left'}`}>
+//               <span className={`inline-block p-2 rounded ${msg.type === 'user' ? 'bg-blue-500' : 'bg-green-500'}`}> {/* Here's the change */}
+//                 <span className="text-white">{msg.content}</span>
+//               </span>
+//             </div>
+//           ))
+//         )}
+//       </div>
+//       <form onSubmit={handleSubmit} className="flex">
+//         <input
+//           type="text"
+//           value={input}
+//           onChange={(e) => setInput(e.target.value)}
+//           className="flex-grow mr-2 p-2 text-black"
+//           placeholder="Type your message..."
+//           color='white'
+//         />
+//         <button type="submit" className="bg-blue-500 p-2 rounded">Send</button>
+//       </form>
+//     </div>
+//   );
+// };
+
+// export default Interactions;
+
+
 import React, { useState } from 'react';
 import axios from 'axios';
 
 const Interactions = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
+  const [rawResponse, setRawResponse] = useState('');
 
   const handleSubmit = async (e) => {
-    // const cors = require('cors');
-    // const express = require('express');
-    // const app = express();
-    // app.use(cors());
-
-
-    // app.use(function(req, res, next) {
-    //   res.header("Access-Control-Allow-Origin", "*");
-    //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    //   next();
-    // });
-
     e.preventDefault();
     if (!input.trim()) return;
     
-    
     setMessages(prev => [...prev, { type: 'user', content: input }]);
-      const response = await axios.post('https://australia-southeast1-rich-agency-372104.cloudfunctions.net/aiko-testing/chat', 
+    
+    try {
+      const response = await axios.post(
+        'https://australia-southeast2-rich-agency-372104.cloudfunctions.net/aiko-testing-1/chat',
         { message: input }
+        // { withCredentials: true } 
       );
       console.log('Response:', response.data); // Log the entire response
-
+      setRawResponse(JSON.stringify(response.data, null, 2)); // Pretty print the raw response
+    } catch (error) {
+      console.error('Error:', error);
+      setRawResponse('Error: ' + error.message);
+    }
+    
     setInput('');
   };
 
@@ -254,10 +304,16 @@ const Interactions = () => {
           messages.map((msg, index) => (
             <div key={index} className={`mb-2 ${msg.type === 'user' ? 'text-right' : 'text-left'}`}>
               <span className={`inline-block p-2 rounded ${msg.type === 'user' ? 'bg-blue-500' : 'bg-green-500'}`}>
-                {msg.content}
+                <span className="text-white">{msg.content}</span>
               </span>
             </div>
           ))
+        )}
+        {rawResponse && (
+          <div className="mt-4 p-2 bg-gray-700 rounded">
+            <h3 className="text-xl mb-2">Raw Response:</h3>
+            <pre className="whitespace-pre-wrap">{rawResponse}</pre>
+          </div>
         )}
       </div>
       <form onSubmit={handleSubmit} className="flex">
