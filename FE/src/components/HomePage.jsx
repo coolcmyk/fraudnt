@@ -73,6 +73,9 @@ const HomePage = () => {
     <>
       <Navbar />
       <GradientBackground>
+        <FullWidthWrapper>
+          <Title />
+        </FullWidthWrapper>
         <ContentWrapper>
           <FullHeightSection id="interactions">
             <Interactions />
@@ -89,6 +92,9 @@ const HomePage = () => {
             <History items={['Item 1', 'Item 2', 'Item 3']} />
           </FullHeightSection>
         </ContentWrapper>
+        <SubmitWrapper id="submit">
+          <Submit />
+        </SubmitWrapper>
         <Footer>© 2024 www.preman.com - All Rights Reserved</Footer>
       </GradientBackground>
     </>
@@ -96,3 +102,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
+

@@ -40,6 +40,10 @@ const HistoryItem = styled.div`
 
 const History = () => {
   const historyItems = [
+    "AI analyzed your code.",
+    "User interacted with the AI.",
+    "Code compilation was successful.",
+    // Add more history items as needed
   ];
 
   return (
@@ -55,3 +59,6 @@ const History = () => {
 };
 
 export default History;
+
+
+
