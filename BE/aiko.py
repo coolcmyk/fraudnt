@@ -84,7 +84,7 @@ class LLM:
             "response": final_rsp,
             "timestamp": dt.datetime.now(),
         }
-        print(data)
+        # print(data)
         #     # Perform operations with the connection object here (if needed)
         #     self.db.store_mem(data)  # This line is incorrect (assuming self.db is LLMdb instance)
         # Change to:
@@ -115,11 +115,26 @@ class LLM:
             # self.db.insert_chat(user_input, response)
         # self.db.close()
 
+    def chat_single_turn(self, user_input):
+        chatbot = self.model.start_chat()
+        response = chatbot.send_message(
+            user_input,
+            generation_config=self.config,
+            safety_settings=self.safety_settings,
+        )
+        final_rsp = response.candidates[0].content.parts[0].text
+        self.store_memory(user_input=user_input, final_rsp=final_rsp)
+        # print("MEMORY:", self.get_memory()) TODO FIX MEM PROBLEM
+        print("Aika:", final_rsp)
+        return final_rsp
 
-def main():
-    aiko = LLM()
-    aiko.chat()
+
+# def main():
+#    aiko = LLM()
+# #    aiko.chat()
+#    inp = input("You: ")
+#    aiko.chat_single_turn(inp)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#    main()
