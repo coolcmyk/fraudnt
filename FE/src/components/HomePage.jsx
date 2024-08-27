@@ -1,60 +1,97 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import styled from 'styled-components';
 import Title from './Title';
+import Navbar from './Navbar';
 import History from './History';
 import Interactions from './Interactions';
+import Stickers from './Sticker';
 import Compiler from './Compiler';
-import Sticker from './Sticker';
 import Submit from './Submit';
 
+const GradientBackground = styled.div`
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+`;
+
+const ContentWrapper = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  flex-grow: 1;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const FullWidthWrapper = styled.div`
+  grid-column: 1 / -1;
+  margin-bottom: 20px;
+`;
+
+const Section = styled.div`
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+const FullHeightSection = styled(Section)`
+  height: 100%;
+`;
+
+const SubmitWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
+const Footer = styled.footer`
+  margin-top: 20px;
+  text-align: center;
+  color: white;
+  font-size: 0.9rem;
+  padding: 10px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
+
 const HomePage = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  useEffect(() => {
-    document.body.style.display = 'block';
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-  }, []);
-
-  const toggleVisibility = () => {
-    if (isVisible) {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setIsVisible(false);
-        setIsTransitioning(false);
-      }, 500);
-    } else {
-      setIsVisible(true);
-    }
-  };
-
   return (
-    <div className="w-full h-full min-h-screen flex flex-col">
-      <Title toggleVisibility={toggleVisibility} isVisible={isVisible} />
-      <div className="flex flex-row justify-between flex-grow transition-all duration-500 ease-in-out">
-        <div className={`flex flex-col w-[830px]`}>
-          <div className={`transition-all duration-500 ease-in-out ${isVisible ? 'w-[830px]' : 'w-[1130px]'}`}>
-            <div className="h-[500px]">
-              <Interactions />
-            </div>
-          </div>
-          <div className="h-[100px]">
-            <Submit />
-          </div>
-          <div className="h-[200px]">
-            <Compiler />
-          </div>
-        </div>
-        <div className="flex flex-col w-1/3">
-          <div className={`transform transition-transform duration-500 ease-in-out ${isVisible || isTransitioning ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}>
-            <History />
-          </div>
-          <div className="h-[300px]">
-            <Sticker toggleVisibility={toggleVisibility} />
-          </div>
-        </div>
-      </div>
-    </div>
+    <>
+      <Navbar />
+      <GradientBackground>
+        <ContentWrapper>
+          <FullHeightSection id="interactions">
+            <Interactions />
+          </FullHeightSection>
+          <FullHeightSection id="stickers">
+            <Stickers />
+          </FullHeightSection>
+          <FullWidthWrapper>
+            <FullHeightSection id="compiler">
+              <Compiler />
+            </FullHeightSection>
+          </FullWidthWrapper>
+          <FullHeightSection id="history">
+            <History items={['Item 1', 'Item 2', 'Item 3']} />
+          </FullHeightSection>
+        </ContentWrapper>
+        <Footer>© 2024 www.preman.com - All Rights Reserved</Footer>
+      </GradientBackground>
+    </>
   );
 };
 
