@@ -4,12 +4,13 @@ import viteLogo from '/vite.svg'
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom"
 import './App.css'
 import HomePage from './components/HomePage'
-
+import Login from './components/auth/login/index.jsx'
 const App = () => (
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to={"/home"} />} />
 
+        {/* <Route path="/login" element={<Login />} /> */}
         <Route path="/home" element={<HomePage />} />
       </Routes>
     </BrowserRouter>

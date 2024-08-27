@@ -1,7 +1,12 @@
-import auth from './firebase';
-import React, {useContext, useState, useEffect} from 'react';
-import onAuthStateChanged from 'firebase/auth';
+// import auth from '../../firebase/auth';
+// // import {auth} from '../../firebase/firebase';
+// import React, {useContext, useState, useEffect} from 'react';
+import onAuthStateChanged from '../../firebase/auth';
+import { auth } from '../../firebase/firebase';
+import React, { useContext, useState, useEffect } from 'react';
+// import { onAuthStateChanged } from 'firebase/auth';
 
+// const AuthContext = React.createContext();
 
 
 const AuthContext = React.createContext();
